@@ -1,0 +1,36 @@
+name: Send Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      tracking_number:
+        description: 'Tracking number'
+        required: true
+      email:
+        description: 'Recipient email'
+        required: true
+      subject:
+        description: 'Email subject'
+        required: true
+      html_body:
+        description: 'Rendered HTML body'
+        required: true
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Send email via Unisender
+        run: node .github/scripts/send-email.js
+        env:
+          UNISENDER_API_KEY: ${{ secrets.UNISENDER_API_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_NAME: ${{ secrets.SENDER_NAME }}
+          TRACKING_NUMBER: ${{ github.event.inputs.tracking_number }}
+          EMAIL: ${{ github.event.inputs.email }}
+          SUBJECT: ${{ github.event.inputs.subject }}
+          HTML_BODY: ${{ github.event.inputs.html_body }}
